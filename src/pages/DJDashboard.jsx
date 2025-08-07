@@ -6,18 +6,31 @@ import GenreSelector from "../components/GenreSelector";
 import CitySelector from "../components/CitySelector";
 import AvailabilitySelector from "../components/AvailabilitySelector";
 import { baseGenres } from "../data/genres";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 export default function DJDashboard() {
   const [name, setName] = useState("");
   const [bio, setBio] = useState("");
   const [genre, setGenre] = useState([]);
-  const [socials, setSocials] = useState("");
+  const [socials, setSocials] = useState({
+    soundcloud: "",
+    instagram: "",
+    facebook: "",
+    twitter: "",
+    tiktok: "",
+    youtube: "",
+    website: ""
+  });
   const [cities, setCities] = useState([]);
   const [rawCityString, setRawCityString] = useState("");
   const [availability, setAvailability] = useState({
     weeklyAvailability: {},
     availabilityOverrides: {},
   });
+  const [profilePic, setProfilePic] = useState(null);
+  const [profilePicUrl, setProfilePicUrl] = useState("");
+  const [epkFile, setEpkFile] = useState(null);
+  const [epkUrl, setEpkUrl] = useState("");
 
   useEffect(() => {
     const fetchInitialData = async () => {
@@ -39,13 +52,27 @@ export default function DJDashboard() {
             ? data.genre
             : data.genre?.split(",").map((g) => g.trim()) || []
         );
-        setSocials(data.socials || "");
+        setSocials({
+          soundcloud: data.socials?.soundcloud || "",
+          instagram: data.socials?.instagram || "",
+          facebook: data.socials?.facebook || "",
+          twitter: data.socials?.twitter || "",
+          tiktok: data.socials?.tiktok || "",
+          youtube: data.socials?.youtube || "",
+          website: data.socials?.website || ""
+        });
         setCities(data.cities || []);
         setRawCityString((data.cities || []).join(", "));
         setAvailability({
           weeklyAvailability: data.weeklyAvailability || {},
           availabilityOverrides: data.availabilityOverrides || {},
         });
+        if (data.profilePicUrl) {
+          setProfilePicUrl(data.profilePicUrl);
+        }
+        if (data.epkUrl) {
+          setEpkUrl(data.epkUrl);
+        }
         console.log(
           "Loaded weeklyAvailability:",
           data.weeklyAvailability || {}
@@ -76,6 +103,14 @@ export default function DJDashboard() {
       }
       const parsedCities = cities;
 
+      const urlRegex = /^(https?:\/\/)?([\w.-]+)\.[a-z]{2,}(\/\S*)?$/i;
+      for (const [platform, link] of Object.entries(socials)) {
+        if (link && !urlRegex.test(link)) {
+          alert(`Invalid URL format for ${platform}`);
+          return;
+        }
+      }
+
       console.log(
         "Saving weeklyAvailability:",
         availability.weeklyAvailability
@@ -85,6 +120,24 @@ export default function DJDashboard() {
         availability.availabilityOverrides
       );
 
+      let uploadedProfilePicUrl = profilePicUrl;
+      if (profilePic) {
+        const storage = getStorage();
+        const storageRef = ref(storage, `profilePics/${auth.currentUser.uid}`);
+        await uploadBytes(storageRef, profilePic);
+        uploadedProfilePicUrl = await getDownloadURL(storageRef);
+        setProfilePicUrl(uploadedProfilePicUrl);
+      }
+
+      let uploadedEpkUrl = epkUrl;
+      if (epkFile) {
+        const storage = getStorage();
+        const epkRef = ref(storage, `epks/${auth.currentUser.uid}`);
+        await uploadBytes(epkRef, epkFile);
+        uploadedEpkUrl = await getDownloadURL(epkRef);
+        setEpkUrl(uploadedEpkUrl);
+      }
+
       await updateDoc(userRef, {
         name,
         bio,
@@ -93,6 +146,8 @@ export default function DJDashboard() {
         cities: parsedCities,
         weeklyAvailability: availability.weeklyAvailability ?? {},
         availabilityOverrides: availability.availabilityOverrides ?? {},
+        profilePicUrl: uploadedProfilePicUrl,
+        epkUrl: uploadedEpkUrl
       });
       alert("Profile updated!");
     } catch (err) {
@@ -106,6 +161,22 @@ export default function DJDashboard() {
       <div className="bg-gray-800 p-4 rounded shadow">
         <h2 className="text-xl font-semibold mb-2">Your DJ Profile</h2>
         <div className="space-y-4">
+          <div className="flex items-center gap-4">
+            {profilePicUrl && (
+              <img src={profilePicUrl} alt="Profile" className="w-20 h-20 rounded-full object-cover" />
+            )}
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => setProfilePic(e.target.files[0])}
+              className="text-white"
+            />
+          </div>
+          {epkUrl && (
+            <a href={epkUrl} target="_blank" rel="noopener noreferrer" className="text-blue-400 underline">
+              View Current EPK
+            </a>
+          )}
           <input
             type="text"
             value={name}
@@ -120,13 +191,27 @@ export default function DJDashboard() {
             placeholder="Short bio"
             className="w-full p-2 rounded text-black"
           />
-          <input
-            type="text"
-            value={socials}
-            onChange={(e) => setSocials(e.target.value)}
-            placeholder="Social links (e.g., IG, SoundCloud)"
-            className="w-full p-2 rounded text-black"
-          />
+          <div className="space-y-2">
+            <label className="block font-semibold">Upload EPK (PDF)</label>
+            <input
+              type="file"
+              accept="application/pdf"
+              onChange={(e) => setEpkFile(e.target.files[0])}
+              className="text-white"
+            />
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {["soundcloud", "instagram", "facebook", "twitter", "tiktok", "youtube", "website"].map((platform) => (
+              <input
+                key={platform}
+                type="url"
+                value={socials[platform]}
+                onChange={(e) => setSocials({ ...socials, [platform]: e.target.value })}
+                placeholder={`${platform.charAt(0).toUpperCase() + platform.slice(1)} URL`}
+                className="w-full p-2 rounded text-black"
+              />
+            ))}
+          </div>
           <CitySelector cities={cities} setCities={setCities} />
         </div>
       </div>

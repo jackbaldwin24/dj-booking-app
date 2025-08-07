@@ -1,8 +1,13 @@
 import React, { useState, useEffect } from "react";
 
 const daysOfWeek = [
-  "Sunday", "Monday", "Tuesday", "Wednesday",
-  "Thursday", "Friday", "Saturday"
+  "Sunday",
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
 ];
 
 const dayLabels = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -20,12 +25,15 @@ export default function AvailabilitySelector({ value, onChange }) {
     if (!value) return;
     console.log("Applying value prop:", value);
     const filled = {};
-    daysOfWeek.forEach(day => {
+    daysOfWeek.forEach((day) => {
       filled[day] = value?.weeklyAvailability?.[day] ?? false;
     });
     console.log("Set weeklyAvailability:", filled);
     setWeeklyAvailability(filled);
-    console.log("Set availabilityOverrides:", value?.availabilityOverrides || {});
+    console.log(
+      "Set availabilityOverrides:",
+      value?.availabilityOverrides || {}
+    );
     setAvailabilityOverrides(value?.availabilityOverrides || {});
     console.log("Override value set:", value?.availabilityOverrides || {});
   }, [value]);
@@ -38,8 +46,7 @@ export default function AvailabilitySelector({ value, onChange }) {
     if (!onChange || !value || typeof value !== "object") return;
 
     const payload = { weeklyAvailability, availabilityOverrides };
-    const alreadySynced =
-      JSON.stringify(payload) === JSON.stringify(value);
+    const alreadySynced = JSON.stringify(payload) === JSON.stringify(value);
 
     if (!alreadySynced) {
       console.log("Saving availability:", payload);
@@ -50,7 +57,7 @@ export default function AvailabilitySelector({ value, onChange }) {
   const toggleDay = (day) => {
     const updated = {
       ...weeklyAvailability,
-      [day]: !weeklyAvailability[day]
+      [day]: !weeklyAvailability[day],
     };
     console.log("Toggled weekly day:", day, "New state:", updated);
     setWeeklyAvailability(updated);
@@ -64,7 +71,7 @@ export default function AvailabilitySelector({ value, onChange }) {
       days.push({
         date: new Date(date),
         dateStr,
-        day: date.getDay()
+        day: date.getDay(),
       });
       date.setDate(date.getDate() + 1);
     }
@@ -95,29 +102,37 @@ export default function AvailabilitySelector({ value, onChange }) {
     } else {
       updatedOverrides[dateStr] = next;
     }
-    console.log("Toggled custom date:", dateStr, "Updated overrides:", updatedOverrides);
+    console.log(
+      "Toggled custom date:",
+      dateStr,
+      "Updated overrides:",
+      updatedOverrides
+    );
     setAvailabilityOverrides(updatedOverrides);
   };
 
   const handlePrevMonth = () => {
     if (currentMonth === 0) {
       setCurrentMonth(11);
-      setCurrentYear(y => y - 1);
+      setCurrentYear((y) => y - 1);
     } else {
-      setCurrentMonth(m => m - 1);
+      setCurrentMonth((m) => m - 1);
     }
   };
 
   const handleNextMonth = () => {
     if (currentMonth === 11) {
       setCurrentMonth(0);
-      setCurrentYear(y => y + 1);
+      setCurrentYear((y) => y + 1);
     } else {
-      setCurrentMonth(m => m + 1);
+      setCurrentMonth((m) => m + 1);
     }
   };
 
-  const monthName = new Date(currentYear, currentMonth).toLocaleString("default", { month: "long" });
+  const monthName = new Date(currentYear, currentMonth).toLocaleString(
+    "default",
+    { month: "long" }
+  );
   const firstDayOffset = new Date(currentYear, currentMonth, 1).getDay();
   const days = getDaysInMonth(currentYear, currentMonth);
   const paddedDays = Array(firstDayOffset).fill(null).concat(days);
@@ -128,13 +143,17 @@ export default function AvailabilitySelector({ value, onChange }) {
       <div className="flex space-x-4">
         <button
           onClick={() => setView("weekly")}
-          className={`px-4 py-2 rounded ${view === "weekly" ? "bg-blue-600" : "bg-gray-700 hover:bg-gray-600"}`}
+          className={`px-4 py-2 rounded ${
+            view === "weekly" ? "bg-blue-600" : "bg-gray-700 hover:bg-gray-600"
+          }`}
         >
           Weekly Availability
         </button>
         <button
           onClick={() => setView("custom")}
-          className={`px-4 py-2 rounded ${view === "custom" ? "bg-blue-600" : "bg-gray-700 hover:bg-gray-600"}`}
+          className={`px-4 py-2 rounded ${
+            view === "custom" ? "bg-blue-600" : "bg-gray-700 hover:bg-gray-600"
+          }`}
         >
           Custom Dates
         </button>
@@ -162,7 +181,9 @@ export default function AvailabilitySelector({ value, onChange }) {
         <div className="p-4 bg-white text-black rounded">
           <div className="flex justify-between items-center mb-2">
             <button onClick={handlePrevMonth}>←</button>
-            <h2 className="text-xl font-semibold">{monthName} {currentYear}</h2>
+            <h2 className="text-xl font-semibold">
+              {monthName} {currentYear}
+            </h2>
             <button onClick={handleNextMonth}>→</button>
           </div>
 

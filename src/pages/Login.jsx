@@ -19,7 +19,10 @@ function Login() {
   };
 
   return (
-    <form onSubmit={handleLogin} className="max-w-md mx-auto mt-10 space-y-4 text-white">
+    <form
+      onSubmit={handleLogin}
+      className="max-w-md mx-auto mt-10 space-y-4 text-white"
+    >
       <h1 className="text-3xl font-bold mb-4">Log In</h1>
       <input
         type="email"
@@ -37,7 +40,10 @@ function Login() {
         className="w-full p-2 bg-gray-700 rounded"
         required
       />
-      <button type="submit" className="w-full p-2 bg-blue-600 hover:bg-blue-700 rounded">
+      <button
+        type="submit"
+        className="w-full p-2 bg-blue-600 hover:bg-blue-700 rounded"
+      >
         Log In
       </button>
       <p className="text-sm">

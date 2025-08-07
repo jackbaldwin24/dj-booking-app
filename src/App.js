@@ -7,6 +7,8 @@ import Dashboard from './pages/Dashboard';
 import Landing from './pages/Landing';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
+import EventDetail from './components/EventDetail';
+import EventEdit from './components/EventEdit';
 
 function App() {
   const [user, setUser] = useState(undefined);
@@ -32,6 +34,14 @@ function App() {
           <Route
             path="/dashboard"
             element={user ? <Dashboard /> : <Navigate to="/login" />}
+          />
+          <Route
+            path="/event/:eventId"
+            element={user ? <EventDetail /> : <Navigate to="/login" />}
+          />
+          <Route
+            path="/edit-event/:eventId"
+            element={user ? <EventEdit /> : <Navigate to="/login" />}
           />
         </Routes>
       </div>

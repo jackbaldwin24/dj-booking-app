@@ -1,101 +1,71 @@
 import React, { useEffect, useState } from "react";
-import { collection, getDocs, query, where } from "firebase/firestore";
-import { db } from "../firebase";
-import GenreSelector from "../components/GenreSelector";
-import CitySelector from "../components/CitySelector";
-import { format, parseISO } from "date-fns";
+import { useNavigate } from "react-router-dom";
+import { collection, query, where, getDocs } from "firebase/firestore";
+import { db, auth } from "../firebase";
+import EventCreate from "../components/EventCreate";
 
 export default function PromoterDashboard() {
-  const [djs, setDjs] = useState([]);
-  const [selectedGenres, setSelectedGenres] = useState([]);
-  const [selectedCities, setSelectedCities] = useState([]);
-  const [selectedDate, setSelectedDate] = useState("");
+  const [events, setEvents] = useState([]);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchDJs = async () => {
+    const fetchEvents = async () => {
+      if (!auth.currentUser) return;
+
       try {
-        const q = query(collection(db, "users"), where("role", "==", "dj"));
+        const q = query(
+          collection(db, "events"),
+          where("promoterId", "==", auth.currentUser.uid)
+        );
         const snapshot = await getDocs(q);
-        const data = snapshot.docs.map((doc) => ({
+        const eventData = snapshot.docs.map(doc => ({
           id: doc.id,
-          ...doc.data(),
+          ...doc.data()
         }));
-        setDjs(data);
+        setEvents(eventData);
       } catch (err) {
-        console.error("Failed to fetch DJs:", err);
+        console.error("Error fetching events:", err);
       }
     };
 
-    fetchDJs();
+    fetchEvents();
   }, []);
 
-  const filteredDjs = djs.filter((dj) => {
-    const matchesGenre =
-      selectedGenres.length === 0 ||
-      (Array.isArray(dj.genre) && selectedGenres.some((g) => dj.genre.includes(g)));
-
-    const matchesCity =
-      selectedCities.length === 0 ||
-      (Array.isArray(dj.cities) && selectedCities.some((c) => dj.cities.includes(c)));
-
-    const matchesDate =
-      !selectedDate ||
-      (() => {
-        const dayOfWeek = format(parseISO(selectedDate), "EEEE");
-        const overrides = dj.availabilityOverrides || {};
-        const weekly = dj.weeklyAvailability || {};
-        if (selectedDate in overrides) {
-          return overrides[selectedDate] === true;
-        }
-        return weekly[dayOfWeek] === true;
-      })();
-
-    return matchesGenre && matchesCity && matchesDate;
-  });
-
   return (
-    <div className="p-6 space-y-6 text-white bg-gray-900 min-h-screen">
-      <h1 className="text-3xl font-bold">🎧 Find DJs</h1>
-      <div className="mb-4">
-        <GenreSelector genres={selectedGenres} setGenres={setSelectedGenres} />
-      </div>
-      <div className="mb-4">
-        <CitySelector cities={selectedCities} setCities={setSelectedCities} />
-      </div>
-      <div className="mb-4">
-        <label className="block mb-1 font-semibold">Select Date</label>
-        <input
-          type="date"
-          value={selectedDate}
-          onChange={(e) => setSelectedDate(e.target.value)}
-          className="p-2 rounded text-black"
-        />
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {filteredDjs.map((dj) => (
+    <div className="p-6 text-white bg-gray-900 min-h-screen">
+      <h1 className="text-3xl font-bold mb-6">Your Events</h1>
+      <button
+        onClick={() => setShowCreateModal(true)}
+        className="mb-4 bg-green-600 px-4 py-2 rounded hover:bg-green-700"
+      >
+        Create Event
+      </button>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {events.map(event => (
           <div
-            key={dj.id}
-            className="bg-gray-800 p-4 rounded shadow border border-gray-700"
+            key={event.id}
+            className="bg-gray-800 p-4 rounded shadow space-y-2"
           >
-            <h2 className="text-xl font-bold mb-1">{dj.name || "Unnamed DJ"}</h2>
-            <p>
-              <strong>Genres:</strong> {Array.isArray(dj.genre) ? dj.genre.join(", ") : "None"}
-            </p>
-            <p>
-              <strong>Cities:</strong>
-            </p>
-            {Array.isArray(dj.cities) && dj.cities.length > 0 ? (
-              <div className="ml-2">
-                {dj.cities.map((city, idx) => (
-                  <div key={idx}>{city}</div>
-                ))}
-              </div>
-            ) : (
-              <p className="ml-2">None</p>
-            )}
+            <h2 className="text-xl font-semibold">{event.name}</h2>
+            <p><strong>Date:</strong> {event.date}</p>
+            <p><strong>City:</strong> {event.city}</p>
+            <button
+              onClick={() => navigate(`/event/${event.id}`)}
+              className="mt-2 bg-blue-600 px-3 py-1 rounded hover:bg-blue-700"
+            >
+              View
+            </button>
           </div>
         ))}
       </div>
+      {showCreateModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white text-black p-4 rounded max-w-lg w-full">
+            <EventCreate onCancel={() => setShowCreateModal(false)} />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
