@@ -24,14 +24,13 @@ export default function GenreSelector({ genres, setGenres, placeholder = "Type a
 
     return (
         <div>
-            <label className="block font-semibold">Genres</label>
             <input
                 list="genre-options"
                 value={genreInput}
                 onChange={(e) => setGenreInput(e.target.value)}
                 onKeyDown={handleAddGenre}
                 placeholder={placeholder}
-                className="w-full p-2 rounded text-black"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 bg-white text-black"
             />
             <datalist id="genre-options">
                 {baseGenres.map((g) => (
@@ -40,13 +39,13 @@ export default function GenreSelector({ genres, setGenres, placeholder = "Type a
             </datalist>
             <div className="flex flex-wrap gap-2 mt-2">
                 {genres.map((g) => (
-                    <span key={g} className="bg-blue-700 text-white px-2 py-1 rounded text-sm flex items-center gap-2">
+                    <span key={g} className="bg-purple-600 text-white px-3 py-1 rounded-full flex items-center gap-2 shadow-sm">
                         {g}
                         <button
                             onClick={() => handleRemoveGenre(g)}
                             className="text-white hover:text-red-400 focus:outline-none"
                         >
-                            ✕
+                            &times;
                         </button>
                     </span>
                 ))}

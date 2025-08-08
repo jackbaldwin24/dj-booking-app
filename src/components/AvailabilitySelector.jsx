@@ -138,8 +138,8 @@ export default function AvailabilitySelector({ value, onChange }) {
   const paddedDays = Array(firstDayOffset).fill(null).concat(days);
 
   return (
-    <div className="bg-gray-900 text-white p-6 rounded space-y-6">
-      <h2 className="text-2xl font-bold">Set Your Availability</h2>
+    <div className="bg-gray-900 text-white p-4 rounded space-y-6">
+      <h2 className="text-xl font-bold">Set Your Availability</h2>
       <div className="flex space-x-4">
         <button
           onClick={() => setView("weekly")}
@@ -162,7 +162,7 @@ export default function AvailabilitySelector({ value, onChange }) {
       {view === "weekly" && (
         <div>
           <h2 className="text-xl font-semibold mb-2">Weekly Availability</h2>
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-3 gap-4">
             {daysOfWeek.map((day) => (
               <label key={day} className="flex items-center gap-2">
                 <input

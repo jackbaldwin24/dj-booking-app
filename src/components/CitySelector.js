@@ -1,9 +1,15 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import citiesData from "../data/cities.json";
 
-export default function CitySelector({ cities, setCities }) {
+export default function CitySelector({ cities, setCities, singleSelect = false }) {
     const [input, setInput] = useState("");
     const [suggestions, setSuggestions] = useState([]);
+
+    useEffect(() => {
+        if (singleSelect) {
+            setInput(cities[0] || "");
+        }
+    }, [cities, singleSelect]);
 
     const handleChange = (e) => {
         const value = e.target.value;
@@ -22,10 +28,18 @@ export default function CitySelector({ cities, setCities }) {
     const handleSelect = (cityObj) => {
         const formatted = `${cityObj.city}, ${cityObj.state}`;
         if (!cities.includes(formatted)) {
-            setCities([...cities, formatted]);
+            if (singleSelect) {
+                setCities([formatted]);
+                setInput(formatted);
+                setSuggestions([]);
+            } else {
+                setCities([...cities, formatted]);
+            }
         }
-        setInput("");
-        setSuggestions([]);
+        if (!singleSelect) {
+            setInput("");
+            setSuggestions([]);
+        }
     };
 
     const handleRemove = (index) => {
@@ -36,14 +50,24 @@ export default function CitySelector({ cities, setCities }) {
 
     return (
         <div className="space-y-2">
-            <label className="block font-semibold">📍 Cities</label>
             <input
                 type="text"
                 value={input}
                 onChange={handleChange}
                 placeholder="Start typing a city..."
-                className="w-full p-2 rounded text-black"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 bg-white text-black"
             />
+            {singleSelect && cities.length > 0 && (
+                <button
+                    onClick={() => {
+                        setCities([]);
+                        setInput("");
+                    }}
+                    className="text-sm text-blue-600 hover:underline"
+                >
+                    Clear
+                </button>
+            )}
             {suggestions.length > 0 && (
                 <ul className="bg-white text-black rounded shadow max-h-48 overflow-y-auto">
                     {suggestions.map((cityObj, i) => (
@@ -58,22 +82,24 @@ export default function CitySelector({ cities, setCities }) {
                 </ul>
             )}
 
-            <div className="flex flex-wrap gap-2 mt-2">
-                {cities.map((city, i) => (
-                    <div
-                        key={i}
-                        className="bg-blue-600 text-white px-2 py-1 rounded flex items-center gap-2"
-                    >
-                        {city}
-                        <button
-                            onClick={() => handleRemove(i)}
-                            className="text-white hover:text-red-300"
+            {!singleSelect && (
+                <div className="flex flex-wrap gap-2 mt-2">
+                    {cities.map((city, i) => (
+                        <div
+                            key={i}
+                            className="bg-purple-600 text-white px-3 py-1 rounded-full flex items-center gap-2 shadow-sm"
                         >
-                            &times;
-                        </button>
-                    </div>
-                ))}
-            </div>
+                            {city}
+                            <button
+                                onClick={() => handleRemove(i)}
+                                className="text-white hover:text-red-400 focus:outline-none"
+                            >
+                                x
+                            </button>
+                        </div>
+                    ))}
+                </div>
+            )}
         </div>
     );
 }
