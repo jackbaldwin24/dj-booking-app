@@ -46,7 +46,7 @@ function AppContent() {
         if (userDocSnap.exists()) {
           const data = userDocSnap.data();
           setRole(data.role || null);
-          setUserStatus(data.status || data.promoterStatus || null);
+          setUserStatus(data.status || null);
           setIsAdmin(!!data.isAdmin);
         } else {
           setRole(null);
@@ -138,11 +138,7 @@ function AppContent() {
             ) : emailVerified === false ? (
               <Navigate to="/verify" />
             ) : role === "promoter" ? (
-              userStatus === "pending" ? (
-                <Navigate to="/pending-review" />
-              ) : (
-                <PromoterDashboard />
-              )
+              <PromoterDashboard />
             ) : (
               <DJDashboard />
             )
@@ -167,10 +163,6 @@ function AppContent() {
         <Route
           path="/dj/:djId"
           element={user ? <DJProfile /> : <Navigate to="/login" />}
-        />
-        <Route
-          path="/pending-review"
-          element={user ? <PendingReview /> : <Navigate to="/login" />}
         />
         <Route path="/support" element={user ? <ContactSupport /> : <Navigate to="/login" />} />
         <Route path="/admin/support" element={
