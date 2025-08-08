@@ -4,6 +4,9 @@ import djDashboard from "../images/dj-dashboard.png";
 import promoterDashboard from "../images/promoter-dashboard.png";
 import eventDetail from "../images/event-detail.png";
 import djSearch from "../images/dj-search.png";
+import djProfileEdit from "../images/dj-profile-edit.png";
+import availabilityWeekly from "../images/availability-weekly.png";
+import availabilityCustom from "../images/availability-custom.png";
 
 function Landing() {
   const navigate = useNavigate();
@@ -20,50 +23,66 @@ function Landing() {
       </section>
 
       {/* Features Section */}
-      <section className="max-w-5xl mx-auto flex flex-col gap-8 text-center">
-        {/* First row: For Promoters and For DJs */}
-        <div className="flex flex-col md:flex-row gap-8">
-          <div className="flex-1 bg-gray-900 bg-opacity-50 rounded-lg p-6 shadow-lg">
-            <h2 className="text-2xl font-semibold mb-2">For Promoters</h2>
-            <p className="text-gray-300">
-              Search DJs by genre, city, and availability. Review their profiles, bios, and social media before sending booking requests — all in one place.
-            </p>
-          </div>
-          <div className="flex-1 bg-gray-900 bg-opacity-50 rounded-lg p-6 shadow-lg">
-            <h2 className="text-2xl font-semibold mb-2">For DJs</h2>
-            <p className="text-gray-300">
-              Create a detailed profile with your bio, genres, cities you play in, availability, and links to your social media. Promoters can easily discover and book you without endless back-and-forth.
-            </p>
+      <section className="max-w-5xl mx-auto flex flex-col md:flex-row gap-8 text-center">
+        {/* DJs Column */}
+        <div className="flex-1 bg-gray-900 bg-opacity-50 rounded-lg p-6 shadow-lg flex flex-col items-center">
+          <h2 className="text-2xl font-semibold mb-2">For DJs</h2>
+          <p className="text-gray-300 mb-6">
+            Create a detailed profile with your bio, genres, cities you play in, availability, and links to your social media. Promoters can easily discover and book you without endless back-and-forth.
+          </p>
+          <div className="flex flex-col gap-6 w-full">
+            <div className="flex flex-col items-center">
+              <img src={djDashboard} alt="DJ Dashboard" className="rounded-lg shadow-lg w-full" />
+              <span className="mt-2 text-sm text-gray-300">
+                DJ Dashboard – View and manage booking requests, upcoming events, and your profile all in one place.
+              </span>
+            </div>
+            <div className="flex flex-col items-center">
+              <img src={djProfileEdit} alt="DJ Profile Edit" className="rounded-lg shadow-lg w-full" />
+              <span className="mt-2 text-sm text-gray-300">
+                DJ Profile Setup – Add your bio, genres, cities, availability, and links so promoters can discover and book you easily.
+              </span>
+            </div>
+            <div className="flex flex-col items-center">
+              <img src={availabilityWeekly} alt="Weekly Availability" className="rounded-lg shadow-lg w-full" />
+              <span className="mt-2 text-sm text-gray-300">
+                Weekly Availability – Select the days of the week you’re usually available to perform.
+              </span>
+            </div>
+            <div className="flex flex-col items-center">
+              <img src={availabilityCustom} alt="Custom Dates" className="rounded-lg shadow-lg w-full" />
+              <span className="mt-2 text-sm text-gray-300">
+                Custom Dates – Add or block off specific dates to fine-tune your availability.
+              </span>
+            </div>
           </div>
         </div>
-      </section>
 
-      <section className="max-w-5xl mx-auto space-y-6 text-center">
-        <h2 className="text-3xl font-bold mb-6">See It in Action</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="flex flex-col items-center">
-            <img src={djDashboard} alt="DJ Dashboard" className="rounded-lg shadow-lg w-full" />
-            <span className="mt-2 text-sm text-gray-300">
-              DJ Dashboard – DJs can view booking requests, upcoming events, and their public profile all in one place.
-            </span>
-          </div>
-          <div className="flex flex-col items-center">
-            <img src={promoterDashboard} alt="Promoter Dashboard" className="rounded-lg shadow-lg w-full" />
-            <span className="mt-2 text-sm text-gray-300">
-              Promoter Dashboard – Promoters can track booking requests they've sent and manage their upcoming events.
-            </span>
-          </div>
-          <div className="flex flex-col items-center">
-            <img src={eventDetail} alt="Event Detail" className="rounded-lg shadow-lg w-full" />
-            <span className="mt-2 text-sm text-gray-300">
-              Event Details – Promoters can view and edit event information, see which DJs are booked, and manage pending requests.
-            </span>
-          </div>
-          <div className="flex flex-col items-center">
-            <img src={djSearch} alt="DJ Search" className="rounded-lg shadow-lg w-full" />
-            <span className="mt-2 text-sm text-gray-300">
-              Find DJs – Promoters can search and filter DJs by genre, city, and availability before sending a booking request.
-            </span>
+        {/* Promoters Column */}
+        <div className="flex-1 bg-gray-900 bg-opacity-50 rounded-lg p-6 shadow-lg flex flex-col items-center">
+          <h2 className="text-2xl font-semibold mb-2">For Promoters</h2>
+          <p className="text-gray-300 mb-6">
+            Search DJs by genre, city, and availability. Review their profiles, bios, and social media before sending booking requests — all in one place.
+          </p>
+          <div className="flex flex-col gap-6 w-full">
+            <div className="flex flex-col items-center">
+              <img src={promoterDashboard} alt="Promoter Dashboard" className="rounded-lg shadow-lg w-full" />
+              <span className="mt-2 text-sm text-gray-300">
+                Promoter Dashboard – Promoters can track booking requests they've sent and manage their upcoming events.
+              </span>
+            </div>
+            <div className="flex flex-col items-center">
+              <img src={eventDetail} alt="Event Detail" className="rounded-lg shadow-lg w-full" />
+              <span className="mt-2 text-sm text-gray-300">
+                Event Details – Promoters can view and edit event information, see which DJs are booked, and manage pending requests.
+              </span>
+            </div>
+            <div className="flex flex-col items-center">
+              <img src={djSearch} alt="DJ Search" className="rounded-lg shadow-lg w-full" />
+              <span className="mt-2 text-sm text-gray-300">
+                Find DJs – Promoters can search and filter DJs by genre, city, and availability before sending a booking request.
+              </span>
+            </div>
           </div>
         </div>
       </section>
